@@ -1,16 +1,3 @@
-// ========== СИСТЕМА АВТОРИЗАЦИИ KAMPODIK ==========
-
-// Проверка авторизации
-function checkAuth() {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    
-    return {
-        isLoggedIn: isLoggedIn === 'true',
-        user: currentUser
-    };
-}
-
 // Обновление меню пользователя
 function updateUserMenu() {
     const userMenu = document.getElementById('userMenu');
@@ -51,32 +38,6 @@ function toggleUserDropdown() {
     }
 }
 
-// Выход из аккаунта
-function logout() {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('currentUser');
-    window.location.reload();
-    showToast('Вы вышли из аккаунта', 'success');
-}
-
-// Требуется авторизация
-function requireAuth() {
-    const auth = checkAuth();
-    if (!auth.isLoggedIn) {
-        showToast('Для продолжения нужно войти в аккаунт', 'error');
-        setTimeout(() => {
-            window.location.href = 'login.html';
-        }, 1500);
-        return false;
-    }
-    return true;
-}
-
-// Получение текущего пользователя
-function getCurrentUser() {
-    const auth = checkAuth();
-    return auth.user;
-}
 
 // Обновление данных пользователя
 function updateUserProfile(updatedData) {

@@ -111,3 +111,264 @@ function logout() {
     </div>
 </body>
 </html>
+<!-- В admin.html добавь эти функции в admin.js -->
+
+<script>
+// ========== ЗАГРУЗКА ЗАКАЗОВ ==========
+function loadOrders() {
+    const ordersTable = document.getElementById('ordersTable');
+    if (!ordersTable) return;
+    
+    const orders = JSON.parse(localStorage.getItem('orders')) || [];
+    
+    if (orders.length === 0) {
+        ordersTable.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 60px;">
+                    <i class="fas fa-inbox" style="font-size: 4rem; color: var(--text-secondary); margin-bottom: 20px;"></i>
+                    <h3>Заказов пока нет</h3>
+                    <p>Как только покупатели оформят заказы, они появятся здесь</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    // Сортировка по дате (новые сверху)
+    orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    ordersTable.innerHTML = orders.map(order => `
+        <tr>
+            <td>#${order.id}</td>
+            <td>
+                <div>${order.userName}</div>
+                <small style="color: var(--text-secondary);">${order.userEmail}</small>
+                <br><small style="color: var(--accent-blue);">${order.userPhone}</small>
+            </td>
+            <td>${order.items.length} тов.</td>
+            <td>${order.total.toLocaleString()} ₽</td>
+            <td>
+                <select onchange="updateOrderStatus(${order.id}, this.value)" 
+                        class="status-select" 
+                        style="padding: 8px 15px; background: var(--bg-card); border: 2px solid var(--accent-purple); border-radius: 10px; color: var(--text-primary);">
+                    <option value="new" ${order.status === 'new' ? 'selected' : ''}>🆕 Новый</option>
+                    <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>⏳ В обработке</option>
+                    <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>📦 Отправлен</option>
+                    <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>✅ Доставлен</option>
+                    <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>❌ Отменён</option>
+                </select>
+            </td>
+            <td>${formatDate(order.date)}</td>
+            <td>
+                <button onclick="viewOrder(${order.id})" class="btn-view" 
+                        style="padding: 8px 15px; background: var(--accent-blue); border: none; border-radius: 8px; color: white; cursor: pointer; margin-right: 5px;">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button onclick="deleteOrder(${order.id})" class="btn-delete" 
+                        style="padding: 8px 15px; background: var(--accent-pink); border: none; border-radius: 8px; color: white; cursor: pointer;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+    
+    // Обновление статистики
+    updateDashboardStats(orders);
+}
+
+// ========== ОБНОВЛЕНИЕ СТАТИСТИКИ ==========
+function updateDashboardStats(orders) {
+    const todayOrders = orders.filter(o => isToday(o.date)).length;
+    const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+    const pendingOrders = orders.filter(o => o.status === 'new' || o.status === 'processing').length;
+    
+    document.getElementById('todayOrders') && (document.getElementById('todayOrders').textContent = todayOrders);
+    document.getElementById('totalRevenue') && (document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString() + ' ₽');
+    document.getElementById('pendingOrders') && (document.getElementById('pendingOrders').textContent = pendingOrders);
+    document.getElementById('totalOrders') && (document.getElementById('totalOrders').textContent = orders.length);
+}
+
+// ========== ПРОСМОТР ЗАКАЗА ==========
+function viewOrder(orderId) {
+    const orders = JSON.parse(localStorage.getItem('orders')) || [];
+    const order = orders.find(o => o.id === orderId);
+    
+    if (!order) return;
+    
+    const itemsList = order.items.map(item => 
+        `• ${item.name} × ${item.quantity} — ${item.price * item.quantity} ₽`
+    ).join('<br>');
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="background: var(--bg-secondary); padding: 40px; border-radius: 20px; max-width: 600px; border: 2px solid var(--accent-purple);">
+            <h2 style="font-family: 'Orbitron'; margin-bottom: 20px;">Заказ #${order.id}</h2>
+            <div style="margin-bottom: 20px;">
+                <p><strong>👤 Клиент:</strong> ${order.userName}</p>
+                <p><strong>📧 Email:</strong> ${order.userEmail}</p>
+                <p><strong>📞 Телефон:</strong> ${order.userPhone}</p>
+                <p><strong>📅 Дата:</strong> ${formatDate(order.date)}</p>
+                <p><strong>🚚 Доставка:</strong> ${order.delivery}</p>
+                <p><strong>📍 Адрес:</strong> ${order.address}</p>
+                <p><strong>💳 Оплата:</strong> ${order.payment}</p>
+            </div>
+            <h3 style="margin-bottom: 15px;"> Товары:</h3>
+            <div style="background: var(--bg-card); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                ${itemsList}
+            </div>
+            <p style="font-size: 1.5rem; text-align: right; color: var(--accent-green);">
+                <strong>Итого: ${order.total.toLocaleString()} ₽</strong>
+            </p>
+            <div style="margin-top: 30px; text-align: right;">
+                <button onclick="this.closest('.modal').remove()" 
+                        style="padding: 12px 30px; background: var(--accent-purple); border: none; border-radius: 10px; color: white; cursor: pointer; font-weight: 600;">
+                    Закрыть
+                </button>
+                <a href="https://wa.me/${order.userPhone.replace(/\D/g, '')}" target="_blank" 
+                   style="padding: 12px 30px; background: #25D366; border: none; border-radius: 10px; color: white; cursor: pointer; font-weight: 600; text-decoration: none; margin-left: 10px;">
+                    <i class="fab fa-whatsapp"></i> Написать в WhatsApp
+                </a>
+            </div>
+        </div>
+    `;
+    
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
+    
+    document.body.appendChild(modal);
+}
+
+// ========== ОБНОВЛЕНИЕ СТАТУСА ==========
+function updateOrderStatus(orderId, newStatus) {
+    const orders = JSON.parse(localStorage.getItem('orders')) || [];
+    const orderIndex = orders.findIndex(o => o.id === orderId);
+    
+    if (orderIndex === -1) return;
+    
+    orders[orderIndex].status = newStatus;
+    localStorage.setItem('orders', JSON.stringify(orders));
+    
+    // Уведомление пользователю
+    notifyUser(orders[orderIndex]);
+    
+    showToast(`Статус заказа #${orderId} обновлён`, 'success');
+    loadOrders();
+}
+
+// ========== УВЕДОМЛЕНИЕ ПОЛЬЗОВАТЕЛЮ ==========
+function notifyUser(order) {
+    // В реальном проекте здесь будет отправка email/SMS
+    const statusMessages = {
+        'new': 'Ваш заказ принят в обработку',
+        'processing': 'Ваш заказ обрабатывается',
+        'shipped': 'Ваш заказ отправлен',
+        'delivered': 'Ваш заказ доставлен',
+        'cancelled': 'Ваш заказ отменён'
+    };
+    
+    console.log(`Уведомление для ${order.userEmail}: ${statusMessages[order.status]}`);
+}
+
+// ========== УДАЛЕНИЕ ЗАКАЗА ==========
+function deleteOrder(orderId) {
+    if (confirm('Удалить заказ #' + orderId + '?')) {
+        const orders = JSON.parse(localStorage.getItem('orders')) || [];
+        const newOrders = orders.filter(o => o.id !== orderId);
+        localStorage.setItem('orders', JSON.stringify(newOrders));
+        showToast('Заказ удалён', 'error');
+        loadOrders();
+    }
+}
+
+// ========== УВЕДОМЛЕНИЯ АДМИНУ ==========
+function loadAdminNotifications() {
+    const notifications = JSON.parse(localStorage.getItem('adminNotifications')) || [];
+    const unreadCount = notifications.filter(n => !n.read).length;
+    
+    const notificationIcon = document.getElementById('notificationIcon');
+    if (notificationIcon && unreadCount > 0) {
+        notificationIcon.innerHTML = `
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge">${unreadCount}</span>
+        `;
+    }
+}
+
+function showNotifications() {
+    const notifications = JSON.parse(localStorage.getItem('adminNotifications')) || [];
+    
+    if (notifications.length === 0) {
+        showToast('Нет новых уведомлений', 'success');
+        return;
+    }
+    
+    const list = notifications.map(n => `
+        <div style="padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <p>${n.message}</p>
+            <small style="color: var(--text-secondary);">${formatDate(n.date)}</small>
+        </div>
+    `).join('');
+    
+    alert('🔔 Уведомления:\n\n' + list);
+    
+    // Помечаем как прочитанные
+    notifications.forEach(n => n.read = true);
+    localStorage.setItem('adminNotifications', JSON.stringify(notifications));
+    loadAdminNotifications();
+}
+
+// ========== ЭКСПОРТ ЗАКАЗОВ ==========
+function exportOrders() {
+    const orders = JSON.parse(localStorage.getItem('orders')) || [];
+    const data = JSON.stringify(orders, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `orders_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    showToast('Заказы экспортированы', 'success');
+}
+
+// ========== УТИЛИТЫ ==========
+function isToday(dateString) {
+    const date = new Date(dateString);
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+           date.getMonth() === today.getMonth() &&
+           date.getFullYear() === today.getFullYear();
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function showToast(message, type = 'success') {
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+    container.appendChild(toast);
+    
+    setTimeout(() => toast.remove(), 3000);
+}
+</script>

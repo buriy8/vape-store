@@ -30,30 +30,7 @@ function toggleSearch() {
     if (searchBar.classList.contains('active')) {
         document.getElementById('searchInput').focus();
     }
-}
 
-// ========== КОЛЕСО ФОРТУНЫ ==========
-function showWheel() {
-    const wheelShown = localStorage.getItem('wheelShown');
-    if (!wheelShown) {
-        setTimeout(() => {
-            document.getElementById('fortuneWheel').classList.add('active');
-        }, 3000);
-    }
-}
-
-function closeWheel() {
-    document.getElementById('fortuneWheel').classList.remove('active');
-    localStorage.setItem('wheelShown', 'true');
-}
-
-function spinWheel() {
-    const prizes = ['5%', '10%', '15%', '20%', '25%', '30%'];
-    const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
-    
-    showToast(`Поздравляем! Ваша скидка: ${randomPrize}`, 'success');
-    localStorage.setItem('promoCode', randomPrize);
-    closeWheel();
 }
 
 // ========== УВЕДОМЛЕНИЯ ==========

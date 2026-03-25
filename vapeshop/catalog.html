@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог | VAPOR STORE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 🔞 Проверка возраста (та же как на главной) -->
+    <div class="age-verification" id="ageVerification">
+        <div class="age-modal">
+            <div class="age-icon">🔞</div>
+            <h1>Вам есть 18 лет?</h1>
+            <p>Сайт содержит информацию о никотиносодержащей продукции.</p>
+            <div class="age-buttons">
+                <button class="btn-age-yes" onclick="confirmAge()">Да, мне есть 18</button>
+                <button class="btn-age-no" onclick="denyAge()">Нет</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Навигация (та же как на главной) -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-smoking"></i>
+                <span>VAPOR</span>
+                <span class="logo-accent">STORE</span>
+            </a>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="catalog.html" class="active">Каталог</a></li>
+                <li><a href="index.html#about">О нас</a></li>
+                <li><a href="index.html#contacts">Контакты</a></li>
+            </ul>
+            <div class="nav-icons">
+                <a href="cart.html" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </a>
+                <div class="menu-toggle" onclick="toggleMenu()">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Каталог -->
+    <section class="catalog section" style="padding-top: 150px;">
+        <div class="container">
+            <h1 class="section-title">Каталог товаров</h1>
+            
+            <div class="catalog-layout">
+                <!-- Фильтры -->
+                <aside class="filters">
+                    <div class="filter-group">
+                        <h3>Категория</h3>
+                        <label><input type="checkbox" value="pods"> POD-системы</label>
+                        <label><input type="checkbox" value="disposable"> Одноразки</label>
+                        <label><input type="checkbox" value="liquids"> Жидкости</label>
+                        <label><input type="checkbox" value="accessories"> Аксессуары</label>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <h3>Цена</h3>
+                        <input type="range" min="0" max="10000" id="priceRange">
+                        <div class="price-values">
+                            <span>0 ₽</span>
+                            <span>10000 ₽</span>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <h3>Бренд</h3>
+                        <label><input type="checkbox"> VOOPOO</label>
+                        <label><input type="checkbox"> SMOK</label>
+                        <label><input type="checkbox"> Husky</label>
+                        <label><input type="checkbox"> Brusko</label>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="applyFilters()">Применить</button>
+                </aside>
+                
+                <!-- Товары -->
+                <div class="catalog-products">
+                    <div class="products-grid" id="catalogProducts">
+                        <!-- Загружаются через JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/main.js"></script>
+    <script src="js/cart.js"></script>
+    <script>
+        // Загрузка всех товаров в каталог
+        function loadCatalogProducts() {
+            const container = document.getElementById('catalogProducts');
+            if (!container) return;
+            
+            container.innerHTML = products.map(product => `
+                <div class="product-card">
+                    ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
+                    <img src="${product.image}" alt="${product.title}" class="product-image">
+                    <div class="product-info">
+                        <div class="product-brand">${product.brand}</div>
+                        <h3 class="product-title">${product.title}</h3>
+                        <div class="product-rating">
+                            ${'★'.repeat(product.rating)}${'☆'.repeat(5 - product.rating)}
+                        </div>
+                        <div class="product-price">
+                            <span class="price-current">${product.price} ₽</span>
+                            ${product.oldPrice ? `<span class="price-old">${product.oldPrice} ₽</span>` : ''}
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-cart" onclick="addToCart(${product.id})">
+                                <i class="fas fa-cart-plus"></i> В корзину
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        loadCatalogProducts();
+    </script>
+</body>
+</html>

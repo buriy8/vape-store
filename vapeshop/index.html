@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAPOR STORE | Вейпы и Жидкости</title>
+    
+    <!-- ШРИФТЫ -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ИКОНКИ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- СТИЛИ -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 🔞 ПРОВЕРКА ВОЗРАСТА -->
+    <div class="age-verification" id="ageVerification">
+        <div class="age-modal">
+            <div class="age-icon">🔞</div>
+            <h1>Вам есть 18 лет?</h1>
+            <p>Сайт содержит информацию о никотиносодержащей продукции. Просмотр разрешён только совершеннолетним.</p>
+            <div class="age-buttons">
+                <button class="btn-age-yes" onclick="confirmAge()">Да, мне есть 18</button>
+                <button class="btn-age-no" onclick="denyAge()">Нет</button>
+            </div>
+            <p class="age-warning">⚠️ Курение вредит вашему здоровью</p>
+        </div>
+    </div>
+
+    <!-- НАВИГАЦИЯ -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-smoking"></i>
+                <span>VAPOR</span>
+                <span class="logo-accent">STORE</span>
+            </a>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="active">Главная</a></li>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="#about">О нас</a></li>
+                <li><a href="#blog">Блог</a></li>
+                <li><a href="#contacts">Контакты</a></li>
+            </ul>
+            
+            <div class="nav-icons">
+                <div class="search-icon" onclick="toggleSearch()">
+                    <i class="fas fa-search"></i>
+                </div>
+                <a href="cart.html" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </a>
+                <a href="#" class="user-icon">
+                    <i class="fas fa-user"></i>
+                </a>
+                <div class="menu-toggle" onclick="toggleMenu()">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ПОИСК -->
+    <div class="search-bar" id="searchBar">
+        <input type="text" placeholder="Поиск товаров..." id="searchInput">
+        <button onclick="toggleSearch()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- HERO СЕКЦИЯ -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="glow">ПРЕМИАЛЬНЫЕ</span>
+                <br>ВЕЙПЫ И ЖИДКОСТИ
+            </h1>
+            <p class="hero-subtitle">Лучшие бренды • Быстрая доставка • Гарантия качества</p>
+            <div class="hero-buttons">
+                <a href="catalog.html" class="btn btn-primary">
+                    <i class="fas fa-shopping-bag"></i> В каталог
+                </a>
+                <a href="#about" class="btn btn-secondary">
+                    <i class="fas fa-info-circle"></i> Узнать больше
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">5000+</span>
+                    <span class="stat-label">Клиентов</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">1000+</span>
+                    <span class="stat-label">Товаров</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">Поддержка</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="vape-cloud"></div>
+            <div class="vape-cloud"></div>
+            <div class="vape-cloud"></div>
+        </div>
+    </section>
+
+    <!-- КАТЕГОРИИ -->
+    <section class="categories section">
+        <div class="container">
+            <h2 class="section-title">Категории</h2>
+            <div class="categories-grid">
+                <a href="catalog.html?category=pods" class="category-card">
+                    <div class="category-icon">📱</div>
+                    <h3>POD-системы</h3>
+                    <p>Компактные и удобные</p>
+                </a>
+                <a href="catalog.html?category=disposable" class="category-card">
+                    <div class="category-icon"></div>
+                    <h3>Одноразки</h3>
+                    <p>Просто и удобно</p>
+                </a>
+                <a href="catalog.html?category=liquids" class="category-card">
+                    <div class="category-icon">💧</div>
+                    <h3>Жидкости</h3>
+                    <p>100+ вкусов</p>
+                </a>
+                <a href="catalog.html?category=accessories" class="category-card">
+                    <div class="category-icon">🔧</div>
+                    <h3>Аксессуары</h3>
+                    <p>Всё для вейпа</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ХИТЫ ПРОДАЖ -->
+    <section class="products section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">🔥 Хиты продаж</h2>
+                <a href="catalog.html" class="view-all">Все товары <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="products-grid" id="featuredProducts">
+                <!-- Товары загружаются через JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- АКЦИИ -->
+    <section class="promo section">
+        <div class="container">
+            <div class="promo-banner">
+                <div class="promo-content">
+                    <span class="promo-badge">-30%</span>
+                    <h2>Большая Распродажа</h2>
+                    <p>Скидки на все жидкости до конца месяца</p>
+                    <div class="promo-timer" id="promoTimer">
+                        <div class="timer-item"><span id="days">00</span>дней</div>
+                        <div class="timer-item"><span id="hours">00</span>часов</div>
+                        <div class="timer-item"><span id="minutes">00</span>минут</div>
+                        <div class="timer-item"><span id="seconds">00</span>секунд</div>
+                    </div>
+                    <a href="catalog.html?promo=true" class="btn btn-primary">Купить сейчас</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ПРЕИМУЩЕСТВА -->
+    <section class="features section">
+        <div class="container">
+            <h2 class="section-title">Почему мы?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🚚</div>
+                    <h3>Быстрая доставка</h3>
+                    <p>От 1 дня по всей стране</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Гарантия качества</h3>
+                    <p>Только оригинальная продукция</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💳</div>
+                    <h3>Удобная оплата</h3>
+                    <p>Карта, наличные, криптовалюта</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Поддержка 24/7</h3>
+                    <p>Всегда на связи</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- КОЛЕСО ФОРТУНЫ -->
+    <div class="fortune-wheel" id="fortuneWheel">
+        <div class="wheel-modal">
+            <button class="wheel-close" onclick="closeWheel()">&times;</button>
+            <h2>Испытай удачу!</h2>
+            <p>Крути колесо и получи скидку</p>
+            <div class="wheel-container">
+                <canvas id="wheelCanvas" width="400" height="400"></canvas>
+            </div>
+            <button class="btn btn-primary" onclick="spinWheel()">Крутить!</button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>VAPOR STORE</h3>
+                    <p>Лучший магазин вейпов и жидкостей с 2020 года</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-vk"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Каталог</h4>
+                    <ul>
+                        <li><a href="catalog.html?category=pods">POD-системы</a></li>
+                        <li><a href="catalog.html?category=disposable">Одноразки</a></li>
+                        <li><a href="catalog.html?category=liquids">Жидкости</a></li>
+                        <li><a href="catalog.html?category=accessories">Аксессуары</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Информация</h4>
+                    <ul>
+                        <li><a href="#about">О нас</a></li>
+                        <li><a href="#delivery">Доставка</a></li>
+                        <li><a href="#payment">Оплата</a></li>
+                        <li><a href="#contacts">Контакты</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Документы</h4>
+                    <ul>
+                        <li><a href="#offer">Оферта</a></li>
+                        <li><a href="#privacy">Конфиденциальность</a></li>
+                        <li><a href="#return">Возврат</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>⚠️ 18+ | Курение вредит вашему здоровью</p>
+                <p>&copy; 2024 VAPOR STORE. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- УВЕДОМЛЕНИЯ -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- СКРИПТЫ -->
+    <script src="js/main.js"></script>
+    <script src="js/cart.js"></script>
+</body>
+</html>

@@ -1,4 +1,21 @@
-<!DOCTYPE html>
+// Проверка, не авторизован ли уже пользователь
+const adminAuth = localStorage.getItem('adminAuth');
+if (adminAuth === 'true') {
+    // Не редиректить сразу, а показать кнопку
+    const loginCard = document.querySelector('.login-card');
+    loginCard.innerHTML += `
+        <div style="margin-top: 20px; padding: 20px; background: rgba(0, 255, 136, 0.1); border-radius: 10px; text-align: center;">
+            <p style="color: #00ff88; margin-bottom: 15px;">✅ Вы уже авторизованы</p>
+            <button onclick="window.location.href='admin.html'" class="btn-login" style="margin-top: 0;">
+                Перейти в админ-панель
+            </button>
+            <button onclick="localStorage.removeItem('adminAuth'); location.reload();" 
+                    style="margin-top: 10px; padding: 10px; background: transparent; border: 2px solid #ff006e; color: #ff006e; border-radius: 10px; cursor: pointer; width: 100%;">
+                Выйти из аккаунта
+            </button>
+        </div>
+    `;
+}<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">

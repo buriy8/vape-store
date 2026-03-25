@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в админ-панель | KAMPODIK</title>
+    
+    <!-- ШРИФТЫ -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ИКОНКИ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- СТИЛИ -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #252525;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent-purple: #9d4edd;
+            --accent-blue: #00d9ff;
+            --accent-pink: #ff006e;
+            --accent-green: #00ff88;
+            --gradient-main: linear-gradient(135deg, #9d4edd 0%, #ff006e 100%);
+            --glow-purple: 0 0 20px rgba(157, 78, 221, 0.5);
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* АНИМИРОВАННЫЙ ФОН */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-animation .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-purple) 0%, transparent 70%);
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .bg-animation .circle:nth-child(1) {
+            width: 400px;
+            height: 400px;
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+
+        .bg-animation .circle:nth-child(2) {
+            width: 300px;
+            height: 300px;
+            top: 50%;
+            right: -150px;
+            animation-delay: 5s;
+        }
+
+        .bg-animation .circle:nth-child(3) {
+            width: 250px;
+            height: 250px;
+            bottom: -125px;
+            left: 30%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 30px) scale(0.9); }
+        }
+
+        /* 🔞 ПРОВЕРКА ВОЗРАСТА */
+        .age-verification {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+        }
+
+        .age-verification.hidden {
+            display: none;
+        }
+
+        .age-modal {
+            background: var(--bg-secondary);
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            border: 2px solid var(--accent-purple);
+            box-shadow: var(--glow-purple);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .age-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .age-modal h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .age-modal p {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .age-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .btn-age-yes,
+        .btn-age-no {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .btn-age-yes {
+            background: var(--gradient-main);
+            color: white;
+        }
+
+        .btn-age-yes:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--glow-purple);
+        }
+
+        .btn-age-no {
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            border: 2px solid var(--text-secondary);
+        }
+
+        .btn-age-no:hover {
+            border-color: var(--accent-pink);
+            color: var(--accent-pink);
+        }
+
+        /* КОНТЕЙНЕР ВХОДА */
+        .login-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--bg-secondary);
+            border-radius: 30px;
+            padding: 50px 40px;
+            border: 2px solid var(--accent-purple);
+            box-shadow: var(--glow-purple);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-main);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            box-shadow: var(--glow-purple);
+        }
+
+        .login-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group label i {
+            margin-right: 8px;
+            color: var(--accent-purple);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-purple);
+            font-size: 1.2rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            background: var(--bg-card);
+            border: 2px solid rgba(157, 78, 221, 0.3);
+            border-radius: 15px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-family: 'Rajdhani', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: var(--glow-purple);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: var(--accent-purple);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--accent-purple);
+        }
+
+        .forgot-password {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: var(--accent-purple);
+            text-decoration: underline;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 18px;
+            background: var(--gradient-main);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--glow-purple);
+        }
+
+        .btn-login:active {
+            transform: translateY(-1px);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .login-footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .login-footer a:hover {
+            color: var(--accent-purple);
+            text-decoration: underline;
+        }
+
+        .back-to-site {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-to-site:hover {
+            color: var(--accent-purple);
+        }
+
+        /* УВЕДОМЛЕНИЯ */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 10001;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-left: 4px solid var(--accent-green);
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .toast.error {
+            border-left-color: var(--accent-pink);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* АДАПТИВНОСТЬ */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 40px 25px;
+            }
+
+            .login-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .form-group input {
+                padding: 12px 15px 12px 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- АНИМИРОВАННЫЙ ФОН -->
+    <div class="bg-animation">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+    </div>
+
+    <!-- 🔞 ПРОВЕРКА ВОЗРАСТА -->
+    <div class="age-verification" id="ageVerification">
+        <div class="age-modal">
+            <div class="age-icon">🔞</div>
+            <h1>Вам есть 18 лет?</h1>
+            <p>Сайт содержит информацию о никотиносодержащей продукции. Просмотр разрешён только совершеннолетним.</p>
+            <div class="age-buttons">
+                <button class="btn-age-yes" onclick="confirmAge()">Да, мне есть 18</button>
+                <button class="btn-age-no" onclick="denyAge()">Нет</button>
+            </div>
+            <p class="age-warning">⚠️ Курение вредит вашему здоровью</p>
+        </div>
+    </div>
+
+    <!-- ФОРМА ВХОДА -->
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h1>KAMPODIK</h1>
+                <p>Админ-панель</p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-user"></i>
+                        Email или логин
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            placeholder="admin@kampodik.com" 
+                            required
+                            autocomplete="username"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-lock"></i>
+                        Пароль
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-key"></i>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            placeholder="••••••••" 
+                            required
+                            autocomplete="current-password"
+                        >
+                        <i class="fas fa-eye password-toggle" onclick="togglePassword()"></i>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember">
+                        <span>Запомнить меня</span>
+                    </label>
+                    <a href="#" class="forgot-password" onclick="forgotPassword()">Забыли пароль?</a>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Войти
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <a href="index.html" class="back-to-site">
+                    <i class="fas fa-arrow-left"></i>
+                    Вернуться на сайт
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- УВЕДОМЛЕНИЯ -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- СКРИПТЫ -->
+    <script>
+        // ========== 🔞 ПРОВЕРКА ВОЗРАСТА ==========
+        function checkAge() {
+            const ageVerified = localStorage.getItem('ageVerified');
+            if (ageVerified === 'true') {
+                document.getElementById('ageVerification').classList.add('hidden');
+            }
+        }
+
+        function confirmAge() {
+            localStorage.setItem('ageVerified', 'true');
+            document.getElementById('ageVerification').classList.add('hidden');
+            showToast('Добро пожаловать!', 'success');
+        }
+
+        function denyAge() {
+            window.location.href = 'https://google.com';
+        }
+
+        // ========== ВХОД В АДМИНКУ ==========
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+
+            // ПРОВЕРКА ЛОГИНА И ПАРОЛЯ
+            // В реальном проекте здесь будет запрос к серверу
+            // Для демо используем простые данные:
+            // Логин: admin@kampodik.com или admin
+            // Пароль: admin123
+            
+            if ((username === 'admin@kampodik.com' || username === 'admin') && password === 'admin123') {
+                // Успешный вход
+                localStorage.setItem('adminAuth', 'true');
+                
+                if (remember) {
+                    localStorage.setItem('rememberMe', 'true');
+                    localStorage.setItem('adminUsername', username);
+                }
+                
+                showToast('Успешный вход! Перенаправление...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 1000);
+                
+            } else {
+                // Ошибка входа
+                showToast('Неверный логин или пароль!', 'error');
+                
+                // Анимация тряски формы
+                const form = document.querySelector('.login-card');
+                form.style.animation = 'none';
+                setTimeout(() => {
+                    form.style.animation = 'shake 0.5s ease';
+                }, 10);
+            }
+        }
+
+        // ========== ПОКАЗАТЬ/СКРЫТЬ ПАРОЛЬ ==========
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.querySelector('.password-toggle');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+
+        // ========== ЗАБЫЛИ ПАРОЛЬ ==========
+        function forgotPassword() {
+            alert('Для восстановления пароля свяжитесь с разработчиком:\n\n📧 Email: support@kampodik.com\n📱 Telegram: @kampodik_support');
+        }
+
+        // ========== УВЕДОМЛЕНИЯ ==========
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // ========== ПРОВЕРКА ЗАПОМНИТЬ МЕНЯ ==========
+        function checkRememberMe() {
+            const rememberMe = localStorage.getItem('rememberMe');
+            const username = localStorage.getItem('adminUsername');
+            
+            if (rememberMe === 'true' && username) {
+                document.getElementById('username').value = username;
+                document.getElementById('remember').checked = true;
+            }
+        }
+
+        // ========== ИНИЦИАЛИЗАЦИЯ ==========
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAge();
+            checkRememberMe();
+            
+            // Проверка, не авторизован ли уже пользователь
+            const adminAuth = localStorage.getItem('adminAuth');
+            if (adminAuth === 'true') {
+                window.location.href = 'admin.html';
+            }
+        });
+
+        // ========== АНИМАЦИЯ ТРЯСКИ ПРИ ОШИБКЕ ==========
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+                20%, 40%, 60%, 80% { transform: translateX(10px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

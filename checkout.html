@@ -1,0 +1,70 @@
+<!-- В конце checkout.html добавь этот скрипт -->
+<script>
+    // ========== СОХРАНЕНИЕ ЗАКАЗА ==========
+    function saveOrder(orderData) {
+        const orders = JSON.parse(localStorage.getItem('orders')) || [];
+        
+        const newOrder = {
+            id: Date.now(),
+            date: new Date().toISOString(),
+            userEmail: getCurrentUser().email,
+            userName: getCurrentUser().name,
+            userPhone: getCurrentUser().phone,
+            items: cart,
+            total: getCartTotal(),
+            status: 'new',
+            delivery: orderData.delivery,
+            address: orderData.address,
+            payment: orderData.payment
+        };
+        
+        orders.push(newOrder);
+        localStorage.setItem('orders', JSON.stringify(orders));
+        
+        // Очищаем корзину
+        localStorage.removeItem('cart');
+        updateCartCount();
+        
+        return newOrder;
+    }
+
+    // ========== ОТПРАВКА ЗАКАЗА ==========
+    function submitOrder(event) {
+        event.preventDefault();
+        
+        if (!requireAuth()) return;
+        
+        const orderData = {
+            delivery: document.getElementById('deliveryMethod').value,
+            address: document.getElementById('deliveryAddress').value,
+            payment: document.getElementById('paymentMethod').value
+        };
+        
+        const order = saveOrder(orderData);
+        
+        // Уведомление админу (в реальном проекте - email/telegram)
+        notifyAdmin(order);
+        
+        showToast('Заказ оформлен! Менеджер свяжется с вами.', 'success');
+        
+        setTimeout(() => {
+            window.location.href = 'profile.html';
+        }, 2000);
+    }
+
+    // ========== УВЕДОМЛЕНИЕ АДМИНУ ==========
+    function notifyAdmin(order) {
+        // В реальном проекте здесь будет отправка email/telegram
+        // Для демо - сохраняем в localStorage
+        const adminNotifications = JSON.parse(localStorage.getItem('adminNotifications')) || [];
+        adminNotifications.push({
+            id: Date.now(),
+            type: 'new_order',
+            message: `Новый заказ #${order.id} от ${order.userName}`,
+            orderId: order.id,
+            date: new Date().toISOString(),
+            read: false
+        });
+        localStorage.setItem('adminNotifications', JSON.stringify(adminNotifications));
+    }
+</script>

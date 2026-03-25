@@ -1,17 +1,3 @@
-function checkAge() {
-    const ageVerified = localStorage.getItem('ageVerified');
-    const ageModal = document.getElementById('ageVerification');
-    
-    // Для отладки — всегда показывать (удалить потом!)
-    // localStorage.removeItem('ageVerified');
-    
-    if (ageVerified === 'true') {
-        ageModal.classList.add('hidden');
-    } else {
-        ageModal.classList.remove('hidden');
-    }
-}
-
 function confirmAge() {
     localStorage.setItem('ageVerified', 'true');
     document.getElementById('ageVerification').classList.add('hidden');
